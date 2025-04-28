@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "104836972768",
+    "project_id": "gripnotes-6183e",
+    "storage_bucket": "gripnotes-6183e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:104836972768:android:9a0f9aaf5a5cb29fc35085",
+        "android_client_info": {
+          "package_name": "com.example.gripnotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsnfB_EAcDDRUEVoOpjdBjBxRHGz6x4Ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
