@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -65,4 +66,11 @@ dependencies {
     implementation(platform(libs.firebase.bom)) // Import the Firebase BoM
     implementation(libs.firebase.auth) // Firebase Authentication
     implementation(libs.firebase.firestore) // Cloud Firestore
+
+    /*
+     * Hilt dependencies
+     * See https://dagger.dev/hilt/gradle-setup.html
+     */
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.android.compiler)
 }
