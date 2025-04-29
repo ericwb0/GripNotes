@@ -12,6 +12,15 @@ import kotlinx.coroutines.flow.Flow
 interface IRepository {
     val notes: Flow<List<Note>>
 
+    /**
+     * Adds or updates a note in the repository.
+     */
     suspend fun setNote(note: Note)
-    suspend fun deleteNote(note: Note)
+
+    /**
+     * Deletes a note from the repository.
+     *
+     * @param id The ID of the note to be deleted.
+     */
+    suspend fun deleteNote(id: String)
 }
