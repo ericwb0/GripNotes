@@ -4,8 +4,21 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * FirestoreRepository is responsible for interacting with Firestore database.
+ * It implements IRepository interface to provide methods for managing notes.
+ *
+ * @property authService An instance of IAuthService for authentication.
+ * @author ericwb0
+ */
 class FirestoreRepository constructor(val authService: IAuthService) : IRepository {
-    val db = Firebase.firestore
+    private val db = Firebase.firestore
+
+    /**
+     * FIRESTORE FIELDS
+     */
+    private val userCollection = "Users"
+    private val notesCollection = "Notes"
 
     override val notes: Flow<List<Note>>
         get() = TODO("Not yet implemented")

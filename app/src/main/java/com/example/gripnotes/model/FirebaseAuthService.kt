@@ -7,6 +7,13 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
+/**
+ * FirebaseAuthService is responsible for handling authentication using Firebase Authentication.
+ * It implements the IAuthService interface to provide methods for signing up, logging in,
+ * logging out, and deleting user accounts.
+ *
+ * @author ericwb0
+ */
 class FirebaseAuthService : IAuthService {
     override val currentUserId: Flow<String>
         get() = callbackFlow {

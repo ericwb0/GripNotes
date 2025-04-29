@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.callbackFlow
  * Interface for authentication service.
  * Main implementation is FirebaseAuthService.
  *
+ * @property currentUserId A Flow that emits the current user ID.
  * @author ericwb0
  */
 interface IAuthService {
