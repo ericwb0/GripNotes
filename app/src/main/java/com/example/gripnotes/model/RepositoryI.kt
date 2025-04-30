@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
  * @property notes A Flow that emits a list of notes.
  * @author ericwb0
  */
-interface IRepository {
+interface RepositoryI {
     val notes: Flow<List<Note>>
 
     /**

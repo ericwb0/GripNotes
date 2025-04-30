@@ -1,8 +1,5 @@
 package com.example.gripnotes.model
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-
 /**
  * Interface for authentication service.
  * Main implementation is FirebaseAuthService.
@@ -10,7 +7,7 @@ import kotlinx.coroutines.flow.callbackFlow
  * @property currentUserId A Flow that emits the current user ID.
  * @author ericwb0
  */
-interface IAuthService {
+interface AuthServiceI {
     interface AuthCallback {
         fun onSuccess(userId: String)
         fun onFailure(errorMessage: String)

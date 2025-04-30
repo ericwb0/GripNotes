@@ -3,17 +3,14 @@ package com.example.gripnotes.model
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.dataObjects
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 /**
  * FirestoreRepository is responsible for interacting with Firestore database.
@@ -22,7 +19,7 @@ import kotlinx.coroutines.tasks.await
  * @property authService An instance of IAuthService for authentication.
  * @author ericwb0
  */
-class FirestoreRepository constructor(val authService: IAuthService) : IRepository {
+class FirestoreRepository @Inject constructor(private val authService: AuthServiceI) : RepositoryI {
     private val db = Firebase.firestore
 
     /**

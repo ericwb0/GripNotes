@@ -1,11 +1,8 @@
 package com.example.gripnotes.model
 
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import javax.inject.Inject
 
 /**
  * FirebaseAuthService is responsible for handling authentication using Firebase Authentication.
@@ -14,11 +11,11 @@ import kotlinx.coroutines.flow.callbackFlow
  *
  * @author ericwb0
  */
-class FirebaseAuthService : IAuthService {
+class FirebaseAuthService @Inject constructor() : AuthServiceI {
     override val currentUserId: String
         get() = Firebase.auth.currentUser?.uid ?: ""
 
-    override fun signUp(email: String, password: String, callback: IAuthService.AuthCallback) {
+    override fun signUp(email: String, password: String, callback: AuthServiceI.AuthCallback) {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -28,7 +25,7 @@ class FirebaseAuthService : IAuthService {
                 }
             }
     }
-    override fun logIn(email: String, password: String, callback: IAuthService.AuthCallback) {
+    override fun logIn(email: String, password: String, callback: AuthServiceI.AuthCallback) {
         Firebase.auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -42,7 +39,7 @@ class FirebaseAuthService : IAuthService {
         Firebase.auth.signOut()
     }
 
-    override fun deleteAccount(callback: IAuthService.AuthCallback) {
+    override fun deleteAccount(callback: AuthServiceI.AuthCallback) {
         val user = Firebase.auth.currentUser
 
         if (user != null) {
