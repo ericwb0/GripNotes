@@ -85,17 +85,52 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
         }
     }
 
-    suspend fun getNoteById(noteId: String): Note? {
+    override suspend fun getNoteById(id: String): Note? {
         // Get the note from Firestore
         return try {
             val doc = db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
-                .collection(Schema.NOTES_COLLECTION).document(noteId).get().await()
+                .collection(Schema.NOTES_COLLECTION).document(id).get().await()
             docToNote(doc)
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error getting note by ID: ${e.message}")
             null
         }
     }
+
+    override suspend fun setUser(user: User) {
+        try {
+            db.collection(Schema.USER_COLLECTION).document(user.id).set(user).await()
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error setting user: ${e.message}")
+        }
+    }
+
+    override suspend fun deleteUser(id: String) {
+        try {
+            db.collection(Schema.USER_COLLECTION).document(id).delete().await()
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error deleting user: ${e.message}")
+        }
+    }
+
+    override suspend fun getUserById(id: String): User? {
+        // Get the user from Firestore
+        return try {
+            val doc = db.collection(Schema.USER_COLLECTION).document(id).get().await()
+            if (doc.exists()) {
+                User(
+                    id = doc.getString(Schema.UserFields.ID) ?: "",
+                    email = doc.getString(Schema.UserFields.EMAIL) ?: ""
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error getting user by ID: ${e.message}")
+            null
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun searchNotes(searchTerm: String): Flow<List<Note>> {
         TODO("Not yet implemented")

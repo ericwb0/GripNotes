@@ -23,4 +23,31 @@ interface RepositoryI {
      * @param id The ID of the note to be deleted.
      */
     suspend fun deleteNote(id: String)
+
+    /**
+     * Gets a note by ID.
+     *
+     * @param id The ID of the note to be retrieved.
+     * @return The note with the specified ID, or null if not found.
+     */
+    suspend fun getNoteById(id: String): Note?
+
+    /**
+     * Adds or updates a user in the repository.
+     *
+     * @param user The user to be added or updated.
+     */
+    suspend fun setUser(user: User)
+
+    /**
+     * Deletes a user from the repository.
+     *
+     * @param id The ID of the user to be deleted.
+     */
+    suspend fun deleteUser(id: String)
+
+    /**
+     * Gets user by ID.
+     */
+    suspend fun getUserById(id: String): User?
 }
