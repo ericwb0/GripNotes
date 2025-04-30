@@ -4,7 +4,7 @@ package com.example.gripnotes.model
  * Interface for authentication service.
  * Main implementation is FirebaseAuthService.
  *
- * @property currentUserId A Flow that emits the current user ID.
+ * @property currentUserId A String representing the current user's ID.
  * @author ericwb0
  */
 interface AuthServiceI {
