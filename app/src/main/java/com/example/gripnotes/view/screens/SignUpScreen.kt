@@ -12,5 +12,5 @@ import com.example.gripnotes.viewmodel.SignUpViewModel
 @Composable
 fun SignUpScreen() {
     val signUpViewModel: SignUpViewModel = viewModel()
-
+    // TODO: Implement the sign up screen
 }
