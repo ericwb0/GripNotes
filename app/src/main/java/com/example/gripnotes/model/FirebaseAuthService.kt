@@ -15,16 +15,8 @@ import kotlinx.coroutines.flow.callbackFlow
  * @author ericwb0
  */
 class FirebaseAuthService : IAuthService {
-    override val currentUserId: Flow<String>
-        get() = callbackFlow {
-            val listener = FirebaseAuth.AuthStateListener { auth ->
-                this.trySend(auth.currentUser?.uid ?: "")
-            }
-            Firebase.auth.addAuthStateListener(listener)
-            awaitClose {
-                Firebase.auth.removeAuthStateListener(listener)
-            }
-        }
+    override val currentUserId: String
+        get() = Firebase.auth.currentUser?.uid ?: ""
 
     override fun signUp(email: String, password: String, callback: IAuthService.AuthCallback) {
         Firebase.auth.createUserWithEmailAndPassword(email, password)

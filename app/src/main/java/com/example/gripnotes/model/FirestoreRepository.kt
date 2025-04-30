@@ -34,50 +34,43 @@ class FirestoreRepository constructor(val authService: IAuthService) : IReposito
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val notes: Flow<List<Note>>
-        get() = authService.currentUserId.flatMapLatest { userId ->
-            // Order descending by updated field
-            db.collection(userCollection).document(userId).collection(notesCollection)
-                .orderBy(updatedField, Direction.DESCENDING)
-                .snapshots().map {
-                    // Convert each document to a Note object
-                    it.documents.map { doc ->
-                        docToNote(doc)
-                    }
+        get() = db.collection(userCollection)
+            .document(authService.currentUserId)
+            .collection(notesCollection)
+            .orderBy(updatedField, Direction.DESCENDING)
+            .snapshots().map {
+                // Convert each document to a Note object
+                it.documents.map { doc ->
+                    docToNote(doc)
                 }
-        }
+            }
 
     override suspend fun setNote(note: Note) {
         val doc = noteToDoc(note)
-        // Get the user ID
-        val userId = authService.currentUserId.single()
         // Set the note in Firestore
         try {
-            db.collection(userCollection).document(userId).collection(notesCollection)
-                .document(note.id).set(doc).await()
+            db.collection(userCollection).document(authService.currentUserId)
+                .collection(notesCollection).document(note.id).set(doc).await()
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error setting note: ${e.message}")
         }
     }
 
     override suspend fun deleteNote(id: String) {
-        // Get the user ID
-        val userId = authService.currentUserId.single()
         // Delete the note from Firestore
         try {
-            db.collection(userCollection).document(userId).collection(notesCollection)
-                .document(id).delete().await()
+            db.collection(userCollection).document(authService.currentUserId)
+                .collection(notesCollection).document(id).delete().await()
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error deleting note: ${e.message}")
         }
     }
 
     suspend fun getNoteById(noteId: String): Note? {
-        // Get the user ID
-        val userId = authService.currentUserId.single()
         // Get the note from Firestore
         return try {
-            val doc = db.collection(userCollection).document(userId).collection(notesCollection)
-                .document(noteId).get().await()
+            val doc = db.collection(userCollection).document(authService.currentUserId)
+                .collection(notesCollection).document(noteId).get().await()
             docToNote(doc)
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error getting note by ID: ${e.message}")

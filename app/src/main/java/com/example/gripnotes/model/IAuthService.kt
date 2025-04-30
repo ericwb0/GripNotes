@@ -16,7 +16,7 @@ interface IAuthService {
         fun onFailure(errorMessage: String)
     }
 
-    val currentUserId: Flow<String> // Will get user details in FirestoreRepository, not here
+    val currentUserId: String // Will get user details in FirestoreRepository, not here
 
     fun signUp(email: String, password: String, callback: AuthCallback)
     fun logIn(email: String, password: String, callback: AuthCallback)
