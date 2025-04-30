@@ -14,9 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.example.gripnotes.R
 import com.example.gripnotes.view.nav.LoggedInNavHost
 
 /**
@@ -36,7 +38,7 @@ fun MainScreen() {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "GripNotes",
+                        text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = androidx.compose.ui.Modifier.padding(16.dp),
