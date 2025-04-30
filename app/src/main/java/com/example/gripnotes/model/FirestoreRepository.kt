@@ -1,6 +1,7 @@
 package com.example.gripnotes.model
 
 import android.util.Log
+
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.firestore
@@ -24,17 +25,38 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
 
     /**
      * FIRESTORE FIELDS
+     * Avoid using hardcoded strings.
      */
-    private val userCollection = "Users"
-    private val notesCollection = "Notes"
-    private val updatedField = "updated"
+    private object Schema {
+        const val USER_COLLECTION = "Users"
+        const val NOTES_COLLECTION = "Notes"
+
+        object UserFields {
+            const val ID = "id"
+            const val EMAIL = "email"
+        }
+
+        object NoteFields {
+            const val ID = "id"
+            const val TITLE = "title"
+            const val CREATED = "created"
+            const val UPDATED = "updated"
+            const val CONTENT = "content"
+        }
+
+        object NoteContentItemFields {
+            const val TYPE = "type"
+            const val TEXT = "text"
+            const val IS_CHECKED = "isChecked"
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val notes: Flow<List<Note>>
-        get() = db.collection(userCollection)
+        get() = db.collection(Schema.USER_COLLECTION)
             .document(authService.currentUserId)
-            .collection(notesCollection)
-            .orderBy(updatedField, Direction.DESCENDING)
+            .collection(Schema.NOTES_COLLECTION)
+            .orderBy(Schema.NoteFields.UPDATED, Direction.DESCENDING)
             .snapshots().map {
                 // Convert each document to a Note object
                 it.documents.map { doc ->
@@ -46,8 +68,8 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
         val doc = noteToDoc(note)
         // Set the note in Firestore
         try {
-            db.collection(userCollection).document(authService.currentUserId)
-                .collection(notesCollection).document(note.id).set(doc).await()
+            db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
+                .collection(Schema.NOTES_COLLECTION).document(note.id).set(doc).await()
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error setting note: ${e.message}")
         }
@@ -56,8 +78,8 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
     override suspend fun deleteNote(id: String) {
         // Delete the note from Firestore
         try {
-            db.collection(userCollection).document(authService.currentUserId)
-                .collection(notesCollection).document(id).delete().await()
+            db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
+                .collection(Schema.NOTES_COLLECTION).document(id).delete().await()
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error deleting note: ${e.message}")
         }
@@ -66,8 +88,8 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
     suspend fun getNoteById(noteId: String): Note? {
         // Get the note from Firestore
         return try {
-            val doc = db.collection(userCollection).document(authService.currentUserId)
-                .collection(notesCollection).document(noteId).get().await()
+            val doc = db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
+                .collection(Schema.NOTES_COLLECTION).document(noteId).get().await()
             docToNote(doc)
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error getting note by ID: ${e.message}")
@@ -93,12 +115,12 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
             Log.e("FirestoreRepository", "Attempted to convert null document to Note")
             return Note()
         }
-        val content = doc.get("content") as? List<Map<String, Any>> ?: emptyList()
+        val content = doc.get(Schema.NoteFields.CONTENT) as? List<Map<String, Any>> ?: emptyList()
         return Note(
             id = doc.id,
-            title = doc.getString("title") ?: "",
-            created = doc.getLong("created") ?: System.currentTimeMillis(),
-            updated = doc.getLong("updated") ?: System.currentTimeMillis(),
+            title = doc.getString(Schema.NoteFields.TITLE) ?: "",
+            created = doc.getLong(Schema.NoteFields.CREATED) ?: System.currentTimeMillis(),
+            updated = doc.getLong(Schema.NoteFields.UPDATED) ?: System.currentTimeMillis(),
             content = content.map {
                 mapToNoteContentItem(it)
             }
@@ -110,10 +132,12 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
      */
     private fun noteToDoc(note: Note): Map<String, Any> {
         return mapOf(
-            "title" to note.title,
-            "created" to note.created,
-            "updated" to note.updated,
-            "content" to note.content.map {
+            Schema.NoteFields.ID to note.id,
+            Schema.NoteFields.TITLE to note.title,
+            Schema.NoteFields.CREATED to note.created,
+            Schema.NoteFields.UPDATED to note.updated,
+            // Convert the content list to a list of maps for Firestore
+            Schema.NoteFields.CONTENT to note.content.map {
                 noteContentItemToMap(it)
             }
         )
@@ -123,14 +147,14 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
      * Converts a Map to a NoteContentItem object.
      */
     private fun mapToNoteContentItem(map: Map<String, Any?>): NoteContentItem {
-        return when (map["type"]) {
+        return when (map[Schema.NoteContentItemFields.TYPE] as? String) {
             NoteContentItem.TextItem::class.simpleName ->
-                NoteContentItem.TextItem(map["text"] as String)
+                NoteContentItem.TextItem(map[Schema.NoteContentItemFields.TEXT] as String)
 
             NoteContentItem.CheckboxItem::class.simpleName ->
                 NoteContentItem.CheckboxItem(
-                    map["text"] as String,
-                    map["isChecked"] as Boolean
+                    map[Schema.NoteContentItemFields.TEXT] as String,
+                    map[Schema.NoteContentItemFields.IS_CHECKED] as Boolean
                 )
 
             else -> throw IllegalArgumentException("Unknown content type")
@@ -144,14 +168,14 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
         return when (item) {
             is NoteContentItem.TextItem -> mapOf(
                 // We know the name won't be null
-                "type" to NoteContentItem.TextItem::class.simpleName!!,
-                "text" to item.text
+                Schema.NoteContentItemFields.TYPE to NoteContentItem.TextItem::class.simpleName!!,
+                Schema.NoteContentItemFields.TEXT to item.text
             )
 
             is NoteContentItem.CheckboxItem -> mapOf(
-                "type" to NoteContentItem.CheckboxItem::class.simpleName!!,
-                "text" to item.text,
-                "isChecked" to item.isChecked
+                Schema.NoteContentItemFields.TYPE to NoteContentItem.CheckboxItem::class.simpleName!!,
+                Schema.NoteContentItemFields.TEXT to item.text,
+                Schema.NoteContentItemFields.IS_CHECKED to item.isChecked
             )
         }
     }
