@@ -23,6 +23,9 @@ class SignUpViewModel @Inject constructor(auth: AuthServiceI, db: RepositoryI): 
     private val _auth = auth
     private val _db = db
 
+    /*
+     * UI state variables
+     */
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
