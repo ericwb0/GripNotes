@@ -10,7 +10,7 @@ import com.example.gripnotes.viewmodel.AccountSettingsViewModel
  * @author ericwb0
  */
 @Composable
-fun AccountSettingsScreen() {
+fun AccountSettingsScreen(onLogout: () -> Unit) {
     val accountSettingsViewModel: AccountSettingsViewModel = viewModel()
     // TODO: Implement the account settings screen
 }

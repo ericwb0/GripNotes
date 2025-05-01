@@ -11,7 +11,7 @@ import com.example.gripnotes.viewmodel.EditorViewModel
  * @author ericwb0
  */
 @Composable
-fun EditorScreen() {
+fun EditorScreen(noteId: String) {
     val editorViewModel: EditorViewModel = viewModel()
     // TODO: Implement the editor screen
 }

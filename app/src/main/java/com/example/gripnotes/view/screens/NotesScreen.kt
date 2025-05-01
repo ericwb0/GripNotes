@@ -11,7 +11,7 @@ import com.example.gripnotes.viewmodel.NotesViewModel
  * @author ericwb0
  */
 @Composable
-fun NotesScreen() {
+fun NotesScreen(onEditNote: (String) -> Unit) {
     val notesViewModel: NotesViewModel = viewModel()
     // TODO: Implement the notes screen
 }
