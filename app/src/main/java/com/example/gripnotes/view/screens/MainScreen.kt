@@ -30,7 +30,7 @@ import com.example.gripnotes.view.nav.LoggedInNavHost
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(onLogout: () -> Unit) {
     val innerNavController = rememberNavController()
 
     Scaffold (
@@ -71,7 +71,7 @@ fun MainScreen() {
                 .testTag("mainScreenContainer")
         ) {
             // Navigation host for the logged-in user
-            LoggedInNavHost(innerNavController)
+            LoggedInNavHost(innerNavController, onLogout)
         }
     }
 }

@@ -2,18 +2,20 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("plugin.serialization") version "2.1.20"
 }
 
 android {
     namespace = "com.example.gripnotes"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.gripnotes"
         minSdk = 27
-        targetSdk = 34
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -76,5 +78,5 @@ dependencies {
      * See https://dagger.dev/hilt/gradle-setup.html
      */
     implementation(libs.hilt.android)
-    implementation(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 }
