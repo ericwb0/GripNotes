@@ -145,6 +145,7 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
      * @param doc The DocumentSnapshot to convert.
      * @return A Note object representing the document.
      */
+    @Suppress("UNCHECKED_CAST")
     private fun docToNote(doc: DocumentSnapshot?): Note {
         if (doc == null) {
             Log.e("FirestoreRepository", "Attempted to convert null document to Note")

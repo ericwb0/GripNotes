@@ -1,7 +1,9 @@
 package com.example.gripnotes.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.gripnotes.model.AuthServiceI
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
  * ViewModel for the Account Settings screen.
@@ -9,6 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
  * @author ericwb0
  */
 @HiltViewModel
-class AccountSettingsViewModel : ViewModel() {
+class AccountSettingsViewModel @Inject constructor(auth: AuthServiceI) : ViewModel() {
 
 }
