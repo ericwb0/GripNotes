@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GripNotes</string>
+    <string name="sign_up_instead">Don\'t have an account? Click here to sign up.</string>
 </resources>
