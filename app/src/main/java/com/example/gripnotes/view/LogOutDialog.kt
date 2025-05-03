@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -44,11 +42,11 @@ fun LogOutDialog(
                     modifier = Modifier.fillMaxWidth().padding(16.dp)
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text(text = "Cancel",)
+                        Text(text = "Cancel")
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = onConfirm) {
-                        Text(text = "Log Out",)
+                        Text(text = "Log Out")
                     }
                 }
             }

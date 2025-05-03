@@ -1,7 +1,6 @@
 package com.example.gripnotes.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.gripnotes.model.Note
 import com.example.gripnotes.model.RepositoryI

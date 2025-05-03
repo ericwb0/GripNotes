@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.example.gripnotes.view.screens.AccountSettingsScreen
 import com.example.gripnotes.view.screens.EditorScreen

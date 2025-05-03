@@ -1,11 +1,10 @@
 package com.example.gripnotes.model
 
 import android.util.Log
-
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.Query.Direction
+import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
