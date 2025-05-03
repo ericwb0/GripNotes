@@ -26,13 +26,13 @@ import com.example.gripnotes.ui.theme.GripNotesTheme
  * Meant to be used in a grid on the Notes screen.
  *
  * @param note The note to display.
- * @param onClick Callback function to be called when the note is clicked.
+ * @param onClick Callback function to be called with the note's ID when the note is clicked.
  * @author ericwb0
  */
 @Composable
-fun NoteOverview(note: Note, modifier: Modifier = Modifier, onClick: (Note) -> Unit = {}) {
+fun NoteOverview(note: Note, modifier: Modifier = Modifier, onClick: (String) -> Unit = {}) {
     OutlinedCard(
-        onClick = { onClick(note) },
+        onClick = { onClick(note.id) },
         modifier = modifier.testTag("note_overview" + note.id)
     ) {
         Column (
