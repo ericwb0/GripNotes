@@ -1,5 +1,6 @@
 package com.example.gripnotes.view.screens
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +25,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gripnotes.model.NoteContentItem
+import com.example.gripnotes.view.DeleteDialog
 import com.example.gripnotes.view.EditorFAB
 import com.example.gripnotes.viewmodel.EditorViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Editor screen composable.
@@ -41,12 +45,36 @@ import com.example.gripnotes.viewmodel.EditorViewModel
 fun EditorScreen(noteId: String) {
     val editorViewModel: EditorViewModel = viewModel()
 
+    var deleteActive by remember { mutableStateOf(false) }
+    var deleteIndex by remember { mutableStateOf(-1) }
+
     val note by editorViewModel.note.collectAsStateWithLifecycle(null)
     val isLoading by editorViewModel.isLoading.collectAsStateWithLifecycle(false)
     val error by editorViewModel.error.collectAsStateWithLifecycle("")
 
+    // Load the note when the screen is first displayed
     LaunchedEffect(noteId) {
         editorViewModel.getNoteById(noteId)
+    }
+
+    if (deleteActive) {
+        DeleteDialog(
+            body = {
+                Text(
+                    text = "Are you sure you want to delete this item?",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            },
+            onDismiss = {
+                deleteIndex = -1
+                deleteActive = false
+            },
+            onDelete = {
+                editorViewModel.removeContent(deleteIndex)
+                deleteIndex = -1
+                deleteActive = false
+            }
+        )
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -113,13 +141,39 @@ fun EditorScreen(noteId: String) {
                                                 editorViewModel.updateContent(index,
                                                     NoteContentItem.TextItem(text))
                                             }
+                                        }.pointerInput(Unit) {
+                                            detectTapGestures(
+                                                onLongPress = {
+                                                    deleteIndex = index
+                                                    deleteActive = true
+                                                }
+                                            )
                                         },
                                     textStyle = MaterialTheme.typography.bodyLarge
                                 )
                             }
                             is NoteContentItem.CheckboxItem -> {
+                                var text by remember { mutableStateOf(contentItem.text) }
+                                var isFocused by remember { mutableStateOf(false) }
                                 Row(
                                     modifier = Modifier.fillMaxSize().padding(8.dp)
+                                        .onFocusChanged {
+                                            isFocused = it.isFocused
+                                            if (!it.isFocused) {
+                                                editorViewModel.updateContent(
+                                                    index,
+                                                    NoteContentItem.CheckboxItem(
+                                                        text, contentItem.isChecked)
+                                                )
+                                            }
+                                        }.pointerInput(Unit) {
+                                            detectTapGestures(
+                                                onLongPress = {
+                                                    deleteIndex = index
+                                                    deleteActive = true
+                                                }
+                                            )
+                                        },
                                 ) {
                                     Checkbox(
                                         checked = contentItem.isChecked,
@@ -130,24 +184,12 @@ fun EditorScreen(noteId: String) {
                                             )
                                         }
                                     )
-                                    var text by remember { mutableStateOf(contentItem.text) }
-                                    var isFocused by remember { mutableStateOf(false) }
                                     BasicTextField(
                                         value = text,
                                         onValueChange = { text = it },
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .padding(8.dp)
-                                            .onFocusChanged {
-                                                isFocused = it.isFocused
-                                                if (!it.isFocused) {
-                                                    editorViewModel.updateContent(
-                                                        index,
-                                                        NoteContentItem.CheckboxItem(
-                                                            text, contentItem.isChecked)
-                                                    )
-                                                }
-                                            },
+                                            .padding(8.dp),
                                         textStyle = MaterialTheme.typography.bodyLarge
                                     )
                                 }
