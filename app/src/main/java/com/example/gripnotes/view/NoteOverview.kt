@@ -63,7 +63,7 @@ fun NoteOverview(note: Note, modifier: Modifier = Modifier, onClick: (String) ->
                             Checkbox(
                                 checked = item.isChecked,
                                 onCheckedChange = null,
-                                enabled = false
+                                enabled = false // Only needed to change the colors to disabled
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                         }

@@ -16,8 +16,7 @@ import javax.inject.Inject
  * @author ericwb0
  */
 @HiltViewModel
-class NotesViewModel @Inject constructor(db: RepositoryI): ViewModel() {
-    private val _repo = db
+class NotesViewModel @Inject constructor(private val db: RepositoryI): ViewModel() {
 
     /*
      * UI state variables
@@ -30,9 +29,10 @@ class NotesViewModel @Inject constructor(db: RepositoryI): ViewModel() {
     /*
      * Live feed of all notes for the user
      */
-    val notes = _repo.notes
+    val notes = db.notes
         .also {
             viewModelScope.launch {
+
                 it.collect { notes ->
                     _isLoading.value = false
                     if (notes.isEmpty()) {
@@ -48,13 +48,13 @@ class NotesViewModel @Inject constructor(db: RepositoryI): ViewModel() {
         val note = Note(title = "New Note") // Create just in case we need id later
         viewModelScope.launch {
             // All we do on this screen is add an empty note, data is handled in the editor
-            _repo.setNote(note)
+            db.setNote(note)
         }
     }
 
     fun deleteNote(id: String) {
         viewModelScope.launch {
-            _repo.deleteNote(id)
+            db.deleteNote(id)
         }
     }
 }

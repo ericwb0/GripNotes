@@ -8,6 +8,8 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -89,7 +91,11 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
         return try {
             val doc = db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
                 .collection(Schema.NOTES_COLLECTION).document(id).get().await()
-            docToNote(doc)
+            if (doc.exists()) {
+                docToNote(doc)
+            } else {
+                null
+            }
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error getting note by ID: ${e.message}")
             null

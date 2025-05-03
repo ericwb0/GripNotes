@@ -19,9 +19,10 @@ import javax.inject.Inject
  * @author ericwb0
  */
 @HiltViewModel
-class SignUpViewModel @Inject constructor(auth: AuthServiceI, db: RepositoryI): ViewModel() {
-    private val _auth = auth
-    private val _db = db
+class SignUpViewModel @Inject constructor(
+        private val auth: AuthServiceI,
+        private val db: RepositoryI): ViewModel()
+    {
 
     /*
      * UI state variables
@@ -78,12 +79,12 @@ class SignUpViewModel @Inject constructor(auth: AuthServiceI, db: RepositoryI): 
         // Attempt to sign up the user
         viewModelScope.launch {
             _isLoading.value = true
-            _auth.signUp(email, password, object : AuthServiceI.AuthCallback {
+            auth.signUp(email, password, object : AuthServiceI.AuthCallback {
                 override fun onSuccess(userId: String) {
                     _isLoading.value = false
                     // Handle successful sign up
                     viewModelScope.launch {
-                        _db.setUser(User(id = userId, email = email))
+                        db.setUser(User(id = userId, email = email))
                     }
                     _isReady.value = true
                 }

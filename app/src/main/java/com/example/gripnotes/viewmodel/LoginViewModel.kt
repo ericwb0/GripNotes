@@ -14,8 +14,7 @@ import javax.inject.Inject
  * @author ericwb0
  */
 @HiltViewModel
-class LoginViewModel @Inject constructor(auth: AuthServiceI): ViewModel() {
-    private val _auth = auth
+class LoginViewModel @Inject constructor(private val auth: AuthServiceI): ViewModel() {
 
     /*
      * UI state variables
@@ -39,7 +38,7 @@ class LoginViewModel @Inject constructor(auth: AuthServiceI): ViewModel() {
         _isReady.value = false
         _error.value = ""
         _isLoading.value = true
-        _auth.logIn(email, password, object : AuthServiceI.AuthCallback {
+        auth.logIn(email, password, object : AuthServiceI.AuthCallback {
             override fun onSuccess(userId: String) {
                 // Handle successful login
                 _isLoading.value = false

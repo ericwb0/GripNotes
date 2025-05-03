@@ -11,6 +11,6 @@ import javax.inject.Inject
  * @author ericwb0
  */
 @HiltViewModel
-class AccountSettingsViewModel @Inject constructor(auth: AuthServiceI) : ViewModel() {
+class AccountSettingsViewModel @Inject constructor(private val auth: AuthServiceI) : ViewModel() {
 
 }
