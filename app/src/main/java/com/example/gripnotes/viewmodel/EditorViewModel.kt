@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gripnotes.model.AuthServiceI
 import com.example.gripnotes.model.Note
+import com.example.gripnotes.model.NoteContentItem
 import com.example.gripnotes.model.RepositoryI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +52,35 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
                 db.setNote(_note.value!!)
             }
             _isLoading.value = false
+        }
+    }
+    fun addContent(content: NoteContentItem = NoteContentItem.TextItem("")) {
+        // Won't update in db until saveNote() is called
+        if(_note.value == null) {
+            _error.value = "Note not found"
+        } else {
+            val newList = _note.value!!.content + content
+            _note.value = _note.value!!.copy(content = newList)
+        }
+    }
+    // Meant to be called inside a forEachIndexed block
+    fun removeContent(index: Int) {
+        // Won't update in db until saveNote() is called
+        if(_note.value == null) {
+            _error.value = "Note not found"
+        } else {
+            val newList = _note.value!!.content.filterIndexed { i, _ -> i != index }
+            _note.value = _note.value!!.copy(content = newList)
+        }
+    }
+    fun updateContent(index: Int, content: NoteContentItem) {
+        // Won't update in db until saveNote() is called
+        if(_note.value == null) {
+            _error.value = "Note not found"
+        } else {
+            val newList = _note.value!!.content.toMutableList()
+            newList[index] = content
+            _note.value = _note.value!!.copy(content = newList)
         }
     }
 }
