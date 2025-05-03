@@ -13,6 +13,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gripnotes.model.NoteContentItem
+import com.example.gripnotes.view.EditorFAB
 import com.example.gripnotes.viewmodel.EditorViewModel
 
 /**
@@ -46,77 +48,57 @@ fun EditorScreen(noteId: String) {
     LaunchedEffect(noteId) {
         editorViewModel.getNoteById(noteId)
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Top
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator()
-            Text(
-                text = "Loading note...",
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.bodyLarge
-            )
-        } else if (error.isNotEmpty() || note == null) {
-            Text(
-                text = error.ifEmpty { "Note not found" },
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error
-            )
-        } else {
-            Text(
-                text = note!!.title,
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.headlineMedium
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(8.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                items(note!!.content.size) { index ->
-                    when (val contentItem = note!!.content[index]) {
-                        is NoteContentItem.TextItem -> {
-                            var text by remember { mutableStateOf(contentItem.text) }
-                            var isFocused by remember { mutableStateOf(false) }
-                            BasicTextField(
-                                value = text,
-                                onValueChange = { text = it },
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp)
-                                    .onFocusChanged {
-                                        isFocused = it.isFocused
-                                        if (!it.isFocused) {
-                                            editorViewModel.updateContent(index,
-                                                NoteContentItem.TextItem(text))
-                                        }
-                                    },
-                                textStyle = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                        is NoteContentItem.CheckboxItem -> {
-                            Row(
-                                modifier = Modifier.fillMaxSize().padding(8.dp)
-                            ) {
-                                Checkbox(
-                                    checked = contentItem.isChecked,
-                                    onCheckedChange = { isChecked ->
-                                        editorViewModel.updateContent(
-                                            index,
-                                            NoteContentItem.CheckboxItem(contentItem.text, isChecked)
-                                        )
-                                    }
-                                )
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = { EditorFAB(
+            onAddTextItem = {
+                editorViewModel.addContent(NoteContentItem.TextItem(""))
+            },
+            onAddCheckboxItem = {
+                editorViewModel.addContent(NoteContentItem.CheckboxItem("", false))
+            }
+        )}
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator()
+                Text(
+                    text = "Loading note...",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            } else if (error.isNotEmpty() || note == null) {
+                Text(
+                    text = error.ifEmpty { "Note not found" },
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                Text(
+                    text = note!!.title,
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                HorizontalDivider(
+                    modifier = Modifier.padding(8.dp),
+                    thickness = 2.dp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    items(note!!.content.size) { index ->
+                        when (val contentItem = note!!.content[index]) {
+                            is NoteContentItem.TextItem -> {
                                 var text by remember { mutableStateOf(contentItem.text) }
                                 var isFocused by remember { mutableStateOf(false) }
                                 BasicTextField(
@@ -128,28 +110,61 @@ fun EditorScreen(noteId: String) {
                                         .onFocusChanged {
                                             isFocused = it.isFocused
                                             if (!it.isFocused) {
-                                                editorViewModel.updateContent(
-                                                    index,
-                                                    NoteContentItem.CheckboxItem(
-                                                        text, contentItem.isChecked)
-                                                )
+                                                editorViewModel.updateContent(index,
+                                                    NoteContentItem.TextItem(text))
                                             }
                                         },
                                     textStyle = MaterialTheme.typography.bodyLarge
                                 )
                             }
+                            is NoteContentItem.CheckboxItem -> {
+                                Row(
+                                    modifier = Modifier.fillMaxSize().padding(8.dp)
+                                ) {
+                                    Checkbox(
+                                        checked = contentItem.isChecked,
+                                        onCheckedChange = { isChecked ->
+                                            editorViewModel.updateContent(
+                                                index,
+                                                NoteContentItem.CheckboxItem(contentItem.text, isChecked)
+                                            )
+                                        }
+                                    )
+                                    var text by remember { mutableStateOf(contentItem.text) }
+                                    var isFocused by remember { mutableStateOf(false) }
+                                    BasicTextField(
+                                        value = text,
+                                        onValueChange = { text = it },
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(8.dp)
+                                            .onFocusChanged {
+                                                isFocused = it.isFocused
+                                                if (!it.isFocused) {
+                                                    editorViewModel.updateContent(
+                                                        index,
+                                                        NoteContentItem.CheckboxItem(
+                                                            text, contentItem.isChecked)
+                                                    )
+                                                }
+                                            },
+                                        textStyle = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            }
                         }
                     }
                 }
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
-                onClick = {
-                    editorViewModel.saveNote()
+                Button(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    onClick = {
+                        editorViewModel.saveNote()
+                    }
+                ) {
+                    Text(text = "Save Note")
                 }
-            ) {
-                Text(text = "Save Note")
             }
         }
     }
+
 }
