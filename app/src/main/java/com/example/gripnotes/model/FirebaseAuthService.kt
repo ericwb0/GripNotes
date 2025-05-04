@@ -16,6 +16,10 @@ class FirebaseAuthService @Inject constructor() : AuthServiceI {
         get() = Firebase.auth.currentUser?.uid
 
     override fun signUp(email: String, password: String, callback: AuthServiceI.AuthCallback) {
+        if (email.isBlank() || password.isBlank()) {
+            callback.onFailure("Email and password cannot be empty")
+            return
+        }
         Firebase.auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -26,6 +30,10 @@ class FirebaseAuthService @Inject constructor() : AuthServiceI {
             }
     }
     override fun logIn(email: String, password: String, callback: AuthServiceI.AuthCallback) {
+        if (email.isBlank() || password.isBlank()) {
+            callback.onFailure("Email and password cannot be empty")
+            return
+        }
         Firebase.auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {

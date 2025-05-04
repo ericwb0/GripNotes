@@ -1,21 +1,29 @@
 package com.example.gripnotes.view.screens
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,15 +34,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gripnotes.model.NoteContentItem
-import com.example.gripnotes.view.DeleteDialog
 import com.example.gripnotes.view.EditorFAB
 import com.example.gripnotes.viewmodel.EditorViewModel
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import kotlin.time.ExperimentalTime
 
 /**
  * Editor screen composable.
@@ -43,45 +58,32 @@ import com.example.gripnotes.viewmodel.EditorViewModel
  * @author ericwb0
  */
 @Composable
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun EditorScreen(
     viewModel: EditorViewModel = viewModel(),
     noteId: String
 ) {
-
-    var deleteActive by remember { mutableStateOf(false) }
-    var deleteIndex by remember { mutableIntStateOf(-1) }
+    var deleteMode by remember { mutableStateOf(false) }
 
     val note by viewModel.note.collectAsStateWithLifecycle(null)
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle(false)
     val error by viewModel.error.collectAsStateWithLifecycle("")
 
+    val focusManager = LocalFocusManager.current // Just makes the editor screen a bit more user friendly
+
     // Load the note when the screen is first displayed
     LaunchedEffect(noteId) {
         viewModel.getNoteById(noteId)
     }
-
-    if (deleteActive) {
-        DeleteDialog(
-            body = {
-                Text(
-                    text = "Are you sure you want to delete this item?",
-                    style = MaterialTheme.typography.bodyLarge
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        focusManager.clearFocus()
+                    }
                 )
             },
-            onDismiss = {
-                deleteIndex = -1
-                deleteActive = false
-            },
-            onDelete = {
-                viewModel.removeContent(deleteIndex)
-                deleteIndex = -1
-                deleteActive = false
-            }
-        )
-    }
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
         floatingActionButton = { EditorFAB(
             onAddTextItem = {
                 viewModel.addContent(NoteContentItem.TextItem(""))
@@ -92,8 +94,11 @@ fun EditorScreen(
         )},
         bottomBar = {
             Button(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 onClick = {
+                    focusManager.clearFocus()
                     viewModel.saveNote()
                 }
             ) {
@@ -103,14 +108,38 @@ fun EditorScreen(
                 )
             }
         }
-    ) { _ ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(4.dp),
+                .padding(
+                    top = 0.dp, bottom = paddingValues.calculateBottomPadding(),
+                    start = 4.dp, end = 4.dp
+                ),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Delete Mode",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Switch(
+                    checked = deleteMode,
+                    onCheckedChange = {
+                        deleteMode = it
+                    },
+                    modifier = Modifier
+                        .testTag("delete_mode_switch")
+                        .padding(8.dp)
+                )
+            }
             if (isLoading) {
                 CircularProgressIndicator()
                 Text(
@@ -126,88 +155,118 @@ fun EditorScreen(
                     color = MaterialTheme.colorScheme.error
                 )
             } else {
-                Text(
-                    text = note!!.title,
-                    modifier = Modifier.padding(4.dp),
-                    style = MaterialTheme.typography.titleLarge
+                BasicTextField(
+                    value = note!!.title,
+                    onValueChange = { viewModel.updateTitle(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    textStyle = MaterialTheme.typography.headlineMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(8.dp),
                     thickness = 2.dp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Text(
+                    text = "Created: ${formatTimestamp(note!!.created)}\n" +
+                            "Last Modified: ${formatTimestamp(note!!.updated)}",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontStyle = FontStyle.Italic
+                    )
+                )
+                Spacer(modifier = Modifier.height(4.dp))
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
                     items(note!!.content.size) { index ->
-                        when (val contentItem = note!!.content[index]) {
-                            is NoteContentItem.TextItem -> {
-                                var text by remember { mutableStateOf(contentItem.text) }
-                                var isFocused by remember { mutableStateOf(false) }
-                                BasicTextField(
-                                    value = text,
-                                    onValueChange = { text = it },
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(8.dp)
-                                        .onFocusChanged {
-                                            isFocused = it.isFocused
-                                            if (!it.isFocused) {
-                                                viewModel.updateContent(index,
-                                                    NoteContentItem.TextItem(text))
-                                            }
-                                        }.pointerInput(Unit) {
-                                            detectTapGestures(
-                                                onLongPress = {
-                                                    deleteIndex = index
-                                                    deleteActive = true
-                                                }
-                                            )
-                                        },
-                                    textStyle = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                            is NoteContentItem.CheckboxItem -> {
-                                var text by remember { mutableStateOf(contentItem.text) }
-                                var isFocused by remember { mutableStateOf(false) }
-                                Row(
-                                    modifier = Modifier.fillMaxSize().padding(8.dp)
-                                        .onFocusChanged {
-                                            isFocused = it.isFocused
-                                            if (!it.isFocused) {
-                                                viewModel.updateContent(
-                                                    index,
-                                                    NoteContentItem.CheckboxItem(
-                                                        text, contentItem.isChecked)
-                                                )
-                                            }
-                                        }.pointerInput(Unit) {
-                                            detectTapGestures(
-                                                onLongPress = {
-                                                    deleteIndex = index
-                                                    deleteActive = true
-                                                }
-                                            )
-                                        },
-                                ) {
-                                    Checkbox(
-                                        checked = contentItem.isChecked,
-                                        onCheckedChange = { isChecked ->
-                                            viewModel.updateContent(
-                                                index,
-                                                NoteContentItem.CheckboxItem(contentItem.text, isChecked)
-                                            )
-                                        }
-                                    )
+                        Row(
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            when (val contentItem = note!!.content[index]) {
+                                is NoteContentItem.TextItem -> {
+                                    var text by remember { mutableStateOf(contentItem.text) }
                                     BasicTextField(
                                         value = text,
-                                        onValueChange = { text = it },
+                                        onValueChange = {
+                                            text = it
+                                            viewModel.updateContent(index, NoteContentItem.TextItem(it))
+                                        },
                                         modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(8.dp),
-                                        textStyle = MaterialTheme.typography.bodyLarge
+                                            .weight(1f)
+                                            .padding(
+                                                start = 8.dp,
+                                                end = 4.dp,
+                                                top = 4.dp,
+                                                bottom = 4.dp
+                                            ),
+                                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        ),
+                                        enabled = !deleteMode,
+                                    )
+
+                                }
+                                is NoteContentItem.CheckboxItem -> {
+                                    var text by remember { mutableStateOf(contentItem.text) }
+                                    Row(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(4.dp),
+                                        horizontalArrangement = Arrangement.Start,
+                                        verticalAlignment = Alignment.Top
+                                    ) {
+                                        Checkbox(
+                                            checked = contentItem.isChecked,
+                                            onCheckedChange = { isChecked ->
+                                                viewModel.updateContent(
+                                                    index,
+                                                    NoteContentItem.CheckboxItem(contentItem.text, isChecked)
+                                                )
+                                            },
+                                        )
+                                        BasicTextField(
+                                            value = text,
+                                            onValueChange = {
+                                                text = it
+                                                viewModel.updateContent(index,
+                                                    NoteContentItem.CheckboxItem(it, contentItem.isChecked))
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(
+                                                    start = 4.dp,
+                                                    end = 4.dp,
+                                                    top = 8.dp,
+                                                    bottom = 4.dp
+                                                ),
+                                            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                            if(deleteMode) {
+                                IconButton(
+                                    onClick = {
+                                        viewModel.removeContent(index)
+                                    },
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .testTag("delete_button_$index")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Delete,
+                                        contentDescription = "Delete",
+                                        tint = MaterialTheme.colorScheme.error,
                                     )
                                 }
                             }
@@ -217,5 +276,14 @@ fun EditorScreen(
             }
         }
     }
+}
 
+/**
+ * Formats a timestamp into a human-readable string.
+ */
+fun formatTimestamp(timestamp: Long): String {
+    val instant = Instant.ofEpochMilli(timestamp)
+    val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    return dateTime.format(formatter)
 }

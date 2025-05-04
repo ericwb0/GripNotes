@@ -92,4 +92,13 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
             _note.value = _note.value!!.copy(content = newList, updated = System.currentTimeMillis())
         }
     }
+
+    fun updateTitle(title: String) {
+        // Won't update in db until saveNote() is called
+        if(_note.value == null) {
+            _error.value = "Note not found"
+        } else {
+            _note.value = _note.value!!.copy(title = title, updated = System.currentTimeMillis())
+        }
+    }
 }
