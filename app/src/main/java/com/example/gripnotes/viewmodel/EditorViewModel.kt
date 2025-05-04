@@ -60,7 +60,7 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
             _error.value = "Note not found"
         } else {
             val newList = _note.value!!.content + content
-            _note.value = _note.value!!.copy(content = newList)
+            _note.value = _note.value!!.copy(content = newList, updated = System.currentTimeMillis())
         }
     }
     // Meant to be called inside a forEachIndexed block
@@ -75,7 +75,7 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
             _error.value = "Note not found"
         } else {
             val newList = _note.value!!.content.filterIndexed { i, _ -> i != index }
-            _note.value = _note.value!!.copy(content = newList)
+            _note.value = _note.value!!.copy(content = newList, updated = System.currentTimeMillis())
         }
     }
     fun updateContent(index: Int, content: NoteContentItem) {
@@ -89,7 +89,7 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
         } else {
             val newList = _note.value!!.content.toMutableList()
             newList[index] = content
-            _note.value = _note.value!!.copy(content = newList)
+            _note.value = _note.value!!.copy(content = newList, updated = System.currentTimeMillis())
         }
     }
 }
