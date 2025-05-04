@@ -41,7 +41,7 @@ fun MainScreen(onLogout: () -> Unit) {
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = androidx.compose.ui.Modifier.padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         textAlign = TextAlign.Center
                     )
                 },
