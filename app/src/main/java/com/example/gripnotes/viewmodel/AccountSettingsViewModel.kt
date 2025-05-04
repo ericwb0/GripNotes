@@ -39,7 +39,8 @@ class AccountSettingsViewModel @Inject constructor(
         _error.value = ""
         viewModelScope.launch {
             try {
-                db.deleteUser(auth.currentUserId)
+                // We know the user is logged in, so we can safely delete their data
+                db.deleteUser(auth.currentUserId!!)
             } catch (e: Exception) {
                 _error.value = "Error deleting user data: ${e.message}"
                 Log.e("AccountSettingsViewModel", "Error deleting user data: ${e.message}")
