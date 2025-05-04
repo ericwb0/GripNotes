@@ -94,8 +94,10 @@ fun AccountSettingsScreen(onLogout: () -> Unit) {
             onClick = { accountDeletionDialogVisible = true },
             enabled = !deleteLoading,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
             ),
         ) {
             if (deleteLoading) {
@@ -106,14 +108,14 @@ fun AccountSettingsScreen(onLogout: () -> Unit) {
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .testTag("deleteLoadingIndicator"),
-                        color = MaterialTheme.colorScheme.onError,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
                         strokeWidth = 2.dp
                     )
                     Text(
                         text = "Deleting...",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(8.dp),
-                        color = MaterialTheme.colorScheme.onError
+                        color = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
 
@@ -125,6 +127,14 @@ fun AccountSettingsScreen(onLogout: () -> Unit) {
                 )
             }
 
+        }
+        if (error.isNotEmpty()) {
+            Text(
+                text = error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(8.dp),
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }
