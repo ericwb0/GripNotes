@@ -40,15 +40,17 @@ import com.example.gripnotes.viewmodel.NotesViewModel
  * @author ericwb0
  */
 @Composable
-fun NotesScreen(onEditNote: (String) -> Unit) {
-    val notesViewModel: NotesViewModel = viewModel()
-    val notes by notesViewModel.notes.collectAsStateWithLifecycle(emptyList())
+fun NotesScreen(
+    onEditNote: (String) -> Unit,
+    viewModel: NotesViewModel = viewModel()
+) {
+    val notes by viewModel.notes.collectAsStateWithLifecycle(emptyList())
 
     var deleteActive by remember { mutableStateOf(false) }
     var noteToDelete by remember { mutableStateOf<Note?>(null) }
 
-    val isLoading by notesViewModel.isLoading.collectAsStateWithLifecycle(false)
-    val error by notesViewModel.error.collectAsStateWithLifecycle("")
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle(false)
+    val error by viewModel.error.collectAsStateWithLifecycle("")
 
     if(deleteActive) {
         DeleteDialog(
@@ -61,7 +63,7 @@ fun NotesScreen(onEditNote: (String) -> Unit) {
             onDismiss = { deleteActive = false },
             onDelete = {
                 if (noteToDelete != null) {
-                    notesViewModel.deleteNote(noteToDelete!!.id)
+                    viewModel.deleteNote(noteToDelete!!.id)
                 } else {
                     Log.e("NotesScreen", "Note to delete is null")
                 }
@@ -75,7 +77,7 @@ fun NotesScreen(onEditNote: (String) -> Unit) {
                 modifier = Modifier.testTag("add_note_fab"),
                 onClick = {
                     val note = Note(title = "New Note")
-                    notesViewModel.addNote(note)
+                    viewModel.addNote(note)
                     onEditNote(note.id)
                 }
             ) {

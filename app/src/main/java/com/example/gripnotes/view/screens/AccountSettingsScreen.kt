@@ -31,23 +31,25 @@ import com.example.gripnotes.viewmodel.AccountSettingsViewModel
  * @author ericwb0
  */
 @Composable
-fun AccountSettingsScreen(onLogout: () -> Unit) {
-    val accountSettingsViewModel: AccountSettingsViewModel = viewModel()
+fun AccountSettingsScreen(
+    viewModel: AccountSettingsViewModel = viewModel(),
+    onLogout: () -> Unit
+) {
 
     // State variables
     var logoutDialogVisible by remember { mutableStateOf(false) }
     var accountDeletionDialogVisible by remember { mutableStateOf(false) }
 
     // State variables from ViewModel
-    val deleteLoading by accountSettingsViewModel.deleteAccountLoading.collectAsStateWithLifecycle()
-    val error by accountSettingsViewModel.error.collectAsStateWithLifecycle()
+    val deleteLoading by viewModel.deleteAccountLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
 
     if(logoutDialogVisible) {
         LogOutDialog(
             onDismiss = { logoutDialogVisible = false },
             onConfirm = {
                 logoutDialogVisible = false
-                accountSettingsViewModel.logOut(onLogout)
+                viewModel.logOut(onLogout)
             }
         )
     }
@@ -62,7 +64,7 @@ fun AccountSettingsScreen(onLogout: () -> Unit) {
             onDismiss = { accountDeletionDialogVisible = false },
             onDelete = {
                 accountDeletionDialogVisible = false
-                accountSettingsViewModel.deleteAccount(onLogout)
+                viewModel.deleteAccount(onLogout)
             },
         )
     }

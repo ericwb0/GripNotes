@@ -42,19 +42,21 @@ import com.example.gripnotes.viewmodel.EditorViewModel
  * @author ericwb0
  */
 @Composable
-fun EditorScreen(noteId: String) {
-    val editorViewModel: EditorViewModel = viewModel()
+fun EditorScreen(
+    viewModel: EditorViewModel = viewModel(),
+    noteId: String
+) {
 
     var deleteActive by remember { mutableStateOf(false) }
     var deleteIndex by remember { mutableIntStateOf(-1) }
 
-    val note by editorViewModel.note.collectAsStateWithLifecycle(null)
-    val isLoading by editorViewModel.isLoading.collectAsStateWithLifecycle(false)
-    val error by editorViewModel.error.collectAsStateWithLifecycle("")
+    val note by viewModel.note.collectAsStateWithLifecycle(null)
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle(false)
+    val error by viewModel.error.collectAsStateWithLifecycle("")
 
     // Load the note when the screen is first displayed
     LaunchedEffect(noteId) {
-        editorViewModel.getNoteById(noteId)
+        viewModel.getNoteById(noteId)
     }
 
     if (deleteActive) {
@@ -70,7 +72,7 @@ fun EditorScreen(noteId: String) {
                 deleteActive = false
             },
             onDelete = {
-                editorViewModel.removeContent(deleteIndex)
+                viewModel.removeContent(deleteIndex)
                 deleteIndex = -1
                 deleteActive = false
             }
@@ -80,10 +82,10 @@ fun EditorScreen(noteId: String) {
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = { EditorFAB(
             onAddTextItem = {
-                editorViewModel.addContent(NoteContentItem.TextItem(""))
+                viewModel.addContent(NoteContentItem.TextItem(""))
             },
             onAddCheckboxItem = {
-                editorViewModel.addContent(NoteContentItem.CheckboxItem("", false))
+                viewModel.addContent(NoteContentItem.CheckboxItem("", false))
             }
         )}
     ) { padding ->
@@ -138,7 +140,7 @@ fun EditorScreen(noteId: String) {
                                         .onFocusChanged {
                                             isFocused = it.isFocused
                                             if (!it.isFocused) {
-                                                editorViewModel.updateContent(index,
+                                                viewModel.updateContent(index,
                                                     NoteContentItem.TextItem(text))
                                             }
                                         }.pointerInput(Unit) {
@@ -160,7 +162,7 @@ fun EditorScreen(noteId: String) {
                                         .onFocusChanged {
                                             isFocused = it.isFocused
                                             if (!it.isFocused) {
-                                                editorViewModel.updateContent(
+                                                viewModel.updateContent(
                                                     index,
                                                     NoteContentItem.CheckboxItem(
                                                         text, contentItem.isChecked)
@@ -178,7 +180,7 @@ fun EditorScreen(noteId: String) {
                                     Checkbox(
                                         checked = contentItem.isChecked,
                                         onCheckedChange = { isChecked ->
-                                            editorViewModel.updateContent(
+                                            viewModel.updateContent(
                                                 index,
                                                 NoteContentItem.CheckboxItem(contentItem.text, isChecked)
                                             )
@@ -200,7 +202,7 @@ fun EditorScreen(noteId: String) {
                 Button(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     onClick = {
-                        editorViewModel.saveNote()
+                        viewModel.saveNote()
                     }
                 ) {
                     Text(text = "Save Note")

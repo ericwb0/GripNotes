@@ -39,17 +39,20 @@ import com.example.gripnotes.viewmodel.LoginViewModel
  * @author ericwb0
  */
 @Composable
-fun LoginScreen(onLogin: () -> Unit, onSignUp: () -> Unit) {
-    val loginViewModel: LoginViewModel = viewModel()
+fun LoginScreen(
+    viewModel: LoginViewModel = viewModel(),
+    onLogin: () -> Unit,
+    onSignUp: () -> Unit
+) {
 
     // State variables for username and password
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     // State from ViewModel
-    val error by loginViewModel.error.collectAsStateWithLifecycle("")
-    val isLoading by loginViewModel.isLoading.collectAsStateWithLifecycle(false)
-    val isReady by loginViewModel.isReady.collectAsStateWithLifecycle(false)
+    val error by viewModel.error.collectAsStateWithLifecycle("")
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle(false)
+    val isReady by viewModel.isReady.collectAsStateWithLifecycle(false)
 
     // If the user is already logged in, navigate to the main screen
 
@@ -112,7 +115,7 @@ fun LoginScreen(onLogin: () -> Unit, onSignUp: () -> Unit) {
         Button(
             modifier = Modifier.testTag("loginButton"),
             onClick = {
-                loginViewModel.logIn(username, password)
+                viewModel.logIn(username, password)
             },
             enabled = !isLoading,
         ) {

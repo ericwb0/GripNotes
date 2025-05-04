@@ -1,6 +1,7 @@
 package com.example.gripnotes.view.nav
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,6 +9,8 @@ import androidx.navigation.navigation
 import com.example.gripnotes.view.screens.LoginScreen
 import com.example.gripnotes.view.screens.MainScreen
 import com.example.gripnotes.view.screens.SignUpScreen
+import com.example.gripnotes.viewmodel.LoginViewModel
+import com.example.gripnotes.viewmodel.SignUpViewModel
 
 /**
  * Contains the root navigation graph.
@@ -17,11 +20,13 @@ import com.example.gripnotes.view.screens.SignUpScreen
  */
 @Composable
 fun RootNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Dest.Login) {
+    NavHost(navController = navController, startDestination = SubGraph.Auth) {
         navigation<SubGraph.Auth> (startDestination = Dest.Login) {
             composable<Dest.Login> {
+                val viewModel = hiltViewModel<LoginViewModel>()
                 LoginScreen(
-                    onLogin= {
+                    viewModel = viewModel,
+                    onLogin = {
                         navController.navigate(SubGraph.Main) {
                             // Clear the entire back stack
                             popUpTo(SubGraph.Auth) {
@@ -33,7 +38,9 @@ fun RootNavHost(navController: NavHostController) {
                 )
             }
             composable<Dest.SignUp> {
+                val viewModel = hiltViewModel<SignUpViewModel>()
                 SignUpScreen(
+                    viewModel = viewModel,
                     onLogin = { navController.navigate(Dest.Login) },
                     onSignUp = {
                         navController.navigate(SubGraph.Main) {
