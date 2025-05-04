@@ -132,7 +132,9 @@ fun SignUpScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                modifier = Modifier.testTag("SignUpButton"),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("SignUpButton"),
                 onClick = {
                     viewModel.signUp(username, password, confirmPassword)
                 },

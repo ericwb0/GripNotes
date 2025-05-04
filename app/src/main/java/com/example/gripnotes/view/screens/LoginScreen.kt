@@ -118,7 +118,9 @@ fun LoginScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                modifier = Modifier.testTag("loginButton"),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("loginButton"),
                 onClick = {
                     viewModel.logIn(username, password)
                 },
