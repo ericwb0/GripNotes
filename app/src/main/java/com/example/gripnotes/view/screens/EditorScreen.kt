@@ -1,5 +1,6 @@
 package com.example.gripnotes.view.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import com.example.gripnotes.viewmodel.EditorViewModel
  * @author ericwb0
  */
 @Composable
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun EditorScreen(
     viewModel: EditorViewModel = viewModel(),
     noteId: String
@@ -87,12 +89,25 @@ fun EditorScreen(
             onAddCheckboxItem = {
                 viewModel.addContent(NoteContentItem.CheckboxItem("", false))
             }
-        )}
-    ) { padding ->
+        )},
+        bottomBar = {
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                onClick = {
+                    viewModel.saveNote()
+                }
+            ) {
+                Text(
+                    text = "Save Note",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+    ) { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
+                .padding(4.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
@@ -113,8 +128,8 @@ fun EditorScreen(
             } else {
                 Text(
                     text = note!!.title,
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.headlineMedium
+                    modifier = Modifier.padding(4.dp),
+                    style = MaterialTheme.typography.titleLarge
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(8.dp),
@@ -198,14 +213,6 @@ fun EditorScreen(
                             }
                         }
                     }
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    onClick = {
-                        viewModel.saveNote()
-                    }
-                ) {
-                    Text(text = "Save Note")
                 }
             }
         }

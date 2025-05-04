@@ -1,5 +1,6 @@
 package com.example.gripnotes.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +42,7 @@ fun NoteOverview(note: Note, modifier: Modifier = Modifier, onClick: (String) ->
         ) {
             Text(
                 text = note.title.ifBlank { "<No title>" },
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 4.dp),
                 maxLines = 1,
                 softWrap = false,
@@ -72,7 +73,7 @@ fun NoteOverview(note: Note, modifier: Modifier = Modifier, onClick: (String) ->
                 Text(
                     text = firstLine,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 3,
+                    maxLines = 10,
                     softWrap = true,
                     overflow = TextOverflow.Ellipsis
                 )

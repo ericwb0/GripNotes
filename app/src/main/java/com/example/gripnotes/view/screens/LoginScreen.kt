@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,84 +65,89 @@ fun LoginScreen(
             onLogin()
         }
     }
-    Column (
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
-            .testTag("loginScreen")
+    Surface (
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Login",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth()
-                .testTag("usernameField"),
-            value = username,
-            onValueChange = { username = it },
-            label = { Text(text = "Username") },
-            isError = error.isNotEmpty(),
-            enabled = !isLoading
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth()
-                .testTag("passwordField"),
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(text = "Password") },
-            isError = error.isNotEmpty(),
-            visualTransformation = PasswordVisualTransformation(),
-            enabled = !isLoading
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        if (error.isNotEmpty()) {
-            Text(
-                modifier = Modifier.testTag("errorText"),
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            modifier = Modifier.testTag("loginButton"),
-            onClick = {
-                viewModel.logIn(username, password)
-            },
-            enabled = !isLoading,
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize().padding(16.dp)
+                .testTag("loginScreen")
         ) {
-            if(isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Login",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth()
+                    .testTag("usernameField"),
+                value = username,
+                onValueChange = { username = it },
+                label = { Text(text = "Username") },
+                isError = error.isNotEmpty(),
+                enabled = !isLoading
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth()
+                    .testTag("passwordField"),
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(text = "Password") },
+                isError = error.isNotEmpty(),
+                visualTransformation = PasswordVisualTransformation(),
+                enabled = !isLoading
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            if (error.isNotEmpty()) {
+                Text(
+                    modifier = Modifier.testTag("errorText"),
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
                 )
-            } else {
-                Text(text = "Login")
             }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        TextButton(
-            modifier = Modifier.fillMaxWidth().testTag("signUpInsteadButton"),
-            onClick = {
-                onSignUp()
-            },
-            enabled = !isLoading
-        ) {
-            Text(
-                text = stringResource(R.string.sign_up_instead),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                modifier = Modifier.testTag("loginButton"),
+                onClick = {
+                    viewModel.logIn(username, password)
+                },
+                enabled = !isLoading,
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text(text = "Login")
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            TextButton(
+                modifier = Modifier.fillMaxWidth().testTag("signUpInsteadButton"),
+                onClick = {
+                    onSignUp()
+                },
+                enabled = !isLoading
+            ) {
+                Text(
+                    text = stringResource(R.string.sign_up_instead),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
+        }
     }
 }

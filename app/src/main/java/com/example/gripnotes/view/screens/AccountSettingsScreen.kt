@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -80,19 +81,25 @@ fun AccountSettingsScreen(
         Text(
             text = "Account Settings",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 64.dp)
         )
         Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("logoutButton"),
             onClick = { logoutDialogVisible = true },
         ) {
             Text(
                 text = "Log Out",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(8.dp)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("deleteAccountButton"),
             onClick = { accountDeletionDialogVisible = true },
             enabled = !deleteLoading,
             colors = ButtonDefaults.buttonColors(
@@ -115,7 +122,7 @@ fun AccountSettingsScreen(
                     )
                     Text(
                         text = "Deleting...",
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(8.dp),
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
@@ -124,7 +131,7 @@ fun AccountSettingsScreen(
             } else {
                 Text(
                     text = "Delete Account",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(8.dp)
                 )
             }

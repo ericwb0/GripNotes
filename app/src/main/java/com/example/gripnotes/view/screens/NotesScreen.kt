@@ -1,20 +1,28 @@
 package com.example.gripnotes.view.screens
 
+import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,8 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role.Companion.Switch
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,6 +47,7 @@ import com.example.gripnotes.viewmodel.NotesViewModel
  *
  * @author ericwb0
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NotesScreen(
     onEditNote: (String) -> Unit,
@@ -47,7 +56,8 @@ fun NotesScreen(
     val notes by viewModel.notes.collectAsStateWithLifecycle(emptyList())
 
     var deleteActive by remember { mutableStateOf(false) }
-    var noteToDelete by remember { mutableStateOf<Note?>(null) }
+    var deleteMode by remember { mutableStateOf(false) }
+    var noteToDelete by remember { mutableStateOf<String?>(null) }
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle(false)
     val error by viewModel.error.collectAsStateWithLifecycle("")
@@ -56,19 +66,25 @@ fun NotesScreen(
         DeleteDialog(
             body = {
                 Text(
-                    text = "Are you sure you want to delete this note?",
+                    modifier = Modifier.padding(16.dp),
+                    text = "Are you sure you want to delete the selected note?",
                     style = MaterialTheme.typography.bodyLarge
                 )
             },
-            onDismiss = { deleteActive = false },
+            onDismiss = {
+                deleteMode = false
+                deleteActive = false
+            },
             onDelete = {
+                deleteMode = false
+                deleteActive = false
                 if (noteToDelete != null) {
-                    viewModel.deleteNote(noteToDelete!!.id)
+                    viewModel.deleteNote(noteToDelete!!)
                 } else {
                     Log.e("NotesScreen", "Note to delete is null")
                 }
-                deleteActive = false
-            },
+
+            }
         )
     }
     Scaffold (
@@ -86,13 +102,32 @@ fun NotesScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
-    ) { padding ->
+    ) { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
+                .padding(0.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Delete Mode",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Switch(
+                    checked = deleteMode,
+                    onCheckedChange = {
+                        deleteMode = it
+                    },
+                    modifier = Modifier.testTag("delete_mode_switch").padding(8.dp)
+                )
+            }
             if (isLoading) {
                 CircularProgressIndicator()
                 Text(
@@ -120,17 +155,15 @@ fun NotesScreen(
                         val note = notes[index]
                         NoteOverview(
                             note = note,
-                            onClick = { onEditNote(note.id) },
-                            modifier = Modifier.padding(8.dp)
-                                .testTag("note_$index")
-                                .pointerInput(Unit) {
-                                    detectTapGestures(
-                                        onLongPress = {
-                                            noteToDelete = note
-                                            deleteActive = true
-                                        }
-                                    )
+                            onClick = { id ->
+                                if(deleteMode) {
+                                    noteToDelete = id
+                                    deleteActive = true
+                                } else {
+                                    onEditNote(id)
                                 }
+                            },
+                            modifier = Modifier.padding(8.dp),
                         )
                     }
                 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gripnotes.R
 import com.example.gripnotes.view.nav.Dest
@@ -36,6 +37,7 @@ import com.example.gripnotes.view.nav.LoggedInNavHost
 @Composable
 fun MainScreen(onLogout: () -> Unit) {
     val innerNavController = rememberNavController()
+    val backStackEntry = innerNavController.currentBackStackEntryAsState()
 
     Scaffold (
         topBar = {
@@ -51,20 +53,17 @@ fun MainScreen(onLogout: () -> Unit) {
                 },
                 navigationIcon = {
                     // Back button that only appears on editor and settings screens
-                    if (innerNavController.previousBackStackEntry != null) {
-                        val destination = innerNavController.currentBackStackEntry?.destination
-                        if (destination?.hierarchy?.any { it.hasRoute(Dest.Editor::class)
-                                    || it.hasRoute(Dest.AccountSettings::class) } == true
-                        ) {
-                            // We know any back button press will take us to the notes screen
-                            IconButton(onClick = { innerNavController.navigate(Dest.Notes) }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                    modifier = Modifier.padding(8.dp).testTag("backIcon"),
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
+                    if (backStackEntry.value?.destination?.hierarchy?.any {
+                        it.hasRoute(Dest.Editor::class) || it.hasRoute(Dest.AccountSettings::class)
+                    } == true ) {
+                        // We know any back button press will take us to the notes screen
+                        IconButton(onClick = { innerNavController.navigate(Dest.Notes) }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                modifier = Modifier.padding(8.dp).testTag("backIcon"),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 },
