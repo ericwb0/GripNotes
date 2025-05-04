@@ -44,8 +44,7 @@ class NotesViewModel @Inject constructor(private val db: RepositoryI): ViewModel
             }
         }
 
-    fun addNote() {
-        val note = Note(title = "New Note") // Create just in case we need id later
+    fun addNote(note: Note) {
         viewModelScope.launch {
             // All we do on this screen is add an empty note, data is handled in the editor
             db.setNote(note)

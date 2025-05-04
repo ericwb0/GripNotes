@@ -33,7 +33,6 @@ import com.example.gripnotes.model.NoteContentItem
 import com.example.gripnotes.view.DeleteDialog
 import com.example.gripnotes.view.EditorFAB
 import com.example.gripnotes.viewmodel.EditorViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Editor screen composable.

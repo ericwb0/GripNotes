@@ -1,8 +1,8 @@
 package com.example.gripnotes.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gripnotes.model.AuthServiceI
 import com.example.gripnotes.model.Note
 import com.example.gripnotes.model.NoteContentItem
 import com.example.gripnotes.model.RepositoryI
@@ -65,6 +65,11 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
     }
     // Meant to be called inside a forEachIndexed block
     fun removeContent(index: Int) {
+
+        if(index < 0 || index >= _note.value!!.content.size) {
+            Log.e("EditorViewModel", "Invalid index: $index")
+            return
+        }
         // Won't update in db until saveNote() is called
         if(_note.value == null) {
             _error.value = "Note not found"
@@ -74,6 +79,10 @@ class EditorViewModel @Inject constructor(private val db: RepositoryI) : ViewMod
         }
     }
     fun updateContent(index: Int, content: NoteContentItem) {
+        if(index < 0 || index >= _note.value!!.content.size) {
+            Log.e("EditorViewModel", "Invalid index: $index")
+            return
+        }
         // Won't update in db until saveNote() is called
         if(_note.value == null) {
             _error.value = "Note not found"
