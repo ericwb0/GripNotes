@@ -58,14 +58,16 @@ fun LoginScreen(onLogin: () -> Unit, onSignUp: () -> Unit) {
 
     LaunchedEffect(isReady) {
         // ViewModel signals that the user is logged in
-        username = ""
-        password = ""
-        Toast.makeText(
-            context,
-            "Logged in successfully",
-            Toast.LENGTH_SHORT
-        ).show()
-        onLogin()
+        if(isReady) {
+            username = ""
+            password = ""
+            Toast.makeText(
+                context,
+                "Logged in successfully",
+                Toast.LENGTH_SHORT
+            ).show()
+            onLogin()
+        }
     }
     Column (
         verticalArrangement = Arrangement.Center,

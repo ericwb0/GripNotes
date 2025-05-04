@@ -59,16 +59,18 @@ fun SignUpScreen(onSignUp : () -> Unit, onLogin: () -> Unit) {
     // If the user is already logged in, navigate to the main screen
 
     LaunchedEffect(isReady) {
-        // ViewModel signals that the user signed up successfully
-        username = ""
-        password = ""
-        confirmPassword = ""
-        Toast.makeText(
-            context,
-            "Sign up successful.",
-            Toast.LENGTH_SHORT
-        ).show()
-        onSignUp()
+        if(isReady) {
+            // ViewModel signals that the user signed up successfully
+            username = ""
+            password = ""
+            confirmPassword = ""
+            Toast.makeText(
+                context,
+                "Sign up successful.",
+                Toast.LENGTH_SHORT
+            ).show()
+            onSignUp()
+        }
     }
     Column (
         verticalArrangement = Arrangement.Center,
