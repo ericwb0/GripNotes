@@ -1,9 +1,12 @@
 package com.example.gripnotes.viewmodel
 
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.gripnotes.model.AuthServiceI
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -14,7 +17,10 @@ import javax.inject.Inject
  * @author ericwb0
  */
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val auth: AuthServiceI): ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val auth: AuthServiceI,
+    @ApplicationContext private val context: Context
+): ViewModel() {
 
     /*
      * UI state variables
@@ -25,7 +31,7 @@ class LoginViewModel @Inject constructor(private val auth: AuthServiceI): ViewMo
     private val _error = MutableStateFlow("")
     val error = _error.asStateFlow()
 
-    private val _isReady = MutableStateFlow(false)
+    private val _isReady = MutableStateFlow(auth.currentUserId != null)
     val isReady = _isReady.asStateFlow()
 
     /**
@@ -43,6 +49,11 @@ class LoginViewModel @Inject constructor(private val auth: AuthServiceI): ViewMo
                 // Handle successful login
                 _isLoading.value = false
                 _isReady.value = true
+                Toast.makeText(
+                    context,
+                    "Logged in successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onFailure(errorMessage: String) {

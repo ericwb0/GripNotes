@@ -50,22 +50,23 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
     }
 
     override val notes: Flow<List<Note>>
-        get() = db.collection(Schema.USER_COLLECTION)
-            .document(authService.currentUserId)
-            .collection(Schema.NOTES_COLLECTION)
-            .orderBy(Schema.NoteFields.UPDATED, Direction.DESCENDING)
-            .snapshots().map {
-                // Convert each document to a Note object
-                it.documents.map { doc ->
-                    docToNote(doc)
+        get() =
+            db.collection(Schema.USER_COLLECTION)
+                .document(authService.currentUserId!!)
+                .collection(Schema.NOTES_COLLECTION)
+                .orderBy(Schema.NoteFields.UPDATED, Direction.DESCENDING)
+                .snapshots().map {
+                    // Convert each document to a Note object
+                    it.documents.map { doc ->
+                        docToNote(doc)
+                    }
                 }
-            }
 
     override suspend fun setNote(note: Note) {
         val doc = noteToDoc(note)
         // Set the note in Firestore
         try {
-            db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
+            db.collection(Schema.USER_COLLECTION).document(authService.currentUserId!!)
                 .collection(Schema.NOTES_COLLECTION).document(note.id).set(doc).await()
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error setting note: ${e.message}")
@@ -75,7 +76,7 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
     override suspend fun deleteNote(id: String) {
         // Delete the note from Firestore
         try {
-            db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
+            db.collection(Schema.USER_COLLECTION).document(authService.currentUserId!!)
                 .collection(Schema.NOTES_COLLECTION).document(id).delete().await()
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "Error deleting note: ${e.message}")
@@ -85,7 +86,7 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
     override suspend fun getNoteById(id: String): Note? {
         // Get the note from Firestore
         return try {
-            val doc = db.collection(Schema.USER_COLLECTION).document(authService.currentUserId)
+            val doc = db.collection(Schema.USER_COLLECTION).document(authService.currentUserId!!)
                 .collection(Schema.NOTES_COLLECTION).document(id).get().await()
             if (doc.exists()) {
                 docToNote(doc)

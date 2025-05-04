@@ -7,3 +7,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.1.20-1.0.32" apply false // KSP plugin
     alias(libs.plugins.hilt.android) apply false // Hilt plugin
 }
+
+allprojects {
+    tasks.withType<JavaCompile> {options.compilerArgs.add("-Xlint:deprecation")}
+}

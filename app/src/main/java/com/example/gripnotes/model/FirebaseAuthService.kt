@@ -12,8 +12,8 @@ import javax.inject.Inject
  * @author ericwb0
  */
 class FirebaseAuthService @Inject constructor() : AuthServiceI {
-    override val currentUserId: String
-        get() = Firebase.auth.currentUser?.uid ?: ""
+    override val currentUserId: String?
+        get() = Firebase.auth.currentUser?.uid
 
     override fun signUp(email: String, password: String, callback: AuthServiceI.AuthCallback) {
         Firebase.auth.createUserWithEmailAndPassword(email, password)

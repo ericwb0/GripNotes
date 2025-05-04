@@ -2,12 +2,15 @@ package com.example.gripnotes.viewmodel
 
 
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gripnotes.model.AuthServiceI
 import com.example.gripnotes.model.RepositoryI
 import com.example.gripnotes.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -20,9 +23,10 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-        private val auth: AuthServiceI,
-        private val db: RepositoryI): ViewModel()
-    {
+    private val auth: AuthServiceI,
+    private val db: RepositoryI,
+    @ApplicationContext private val context: Context
+): ViewModel() {
 
     /*
      * UI state variables
@@ -86,6 +90,11 @@ class SignUpViewModel @Inject constructor(
                     viewModelScope.launch {
                         db.setUser(User(id = userId, email = email))
                     }
+                    Toast.makeText(
+                        context,
+                        "Sign up successful",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     _isReady.value = true
                 }
 
