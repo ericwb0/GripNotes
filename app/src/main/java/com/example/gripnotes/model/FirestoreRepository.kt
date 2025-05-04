@@ -100,6 +100,10 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
     }
 
     override suspend fun setUser(user: User) {
+        if (user.id.isEmpty()) {
+            Log.e("FirestoreRepository", "User ID for set user is empty")
+            return
+        }
         try {
             db.collection(Schema.USER_COLLECTION).document(user.id).set(user).await()
         } catch (e: Exception) {
