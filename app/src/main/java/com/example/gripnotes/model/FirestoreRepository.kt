@@ -6,7 +6,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query.Direction
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.snapshots
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
@@ -50,7 +49,6 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override val notes: Flow<List<Note>>
         get() = db.collection(Schema.USER_COLLECTION)
             .document(authService.currentUserId)
@@ -132,11 +130,6 @@ class FirestoreRepository @Inject constructor(private val authService: AuthServi
             Log.e("FirestoreRepository", "Error getting user by ID: ${e.message}")
             null
         }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun searchNotes(searchTerm: String): Flow<List<Note>> {
-        TODO("Not yet implemented")
     }
 
     /*

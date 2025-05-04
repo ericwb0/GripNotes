@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,7 +46,7 @@ fun EditorScreen(noteId: String) {
     val editorViewModel: EditorViewModel = viewModel()
 
     var deleteActive by remember { mutableStateOf(false) }
-    var deleteIndex by remember { mutableStateOf(-1) }
+    var deleteIndex by remember { mutableIntStateOf(-1) }
 
     val note by editorViewModel.note.collectAsStateWithLifecycle(null)
     val isLoading by editorViewModel.isLoading.collectAsStateWithLifecycle(false)
