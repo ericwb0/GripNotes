@@ -1,5 +1,6 @@
 package com.example.gripnotes.view.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,6 +44,7 @@ import com.example.gripnotes.viewmodel.SignUpViewModel
 @Composable
 fun SignUpScreen(onSignUp : () -> Unit, onLogin: () -> Unit) {
     val signUpViewModel: SignUpViewModel = viewModel()
+    val context = LocalContext.current
 
     // State variables for username and password
     var username by remember { mutableStateOf("") }
@@ -60,6 +63,11 @@ fun SignUpScreen(onSignUp : () -> Unit, onLogin: () -> Unit) {
         username = ""
         password = ""
         confirmPassword = ""
+        Toast.makeText(
+            context,
+            "Sign up successful.",
+            Toast.LENGTH_SHORT
+        ).show()
         onSignUp()
     }
     Column (

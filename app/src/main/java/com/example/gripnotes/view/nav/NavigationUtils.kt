@@ -20,3 +20,9 @@ sealed class Dest {
     @Serializable
     data object AccountSettings : Dest()
 }
+sealed class SubGraph {
+    @Serializable
+    data object Auth : SubGraph()
+    @Serializable
+    data object Main : SubGraph()
+}
